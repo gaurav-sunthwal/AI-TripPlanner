@@ -11,6 +11,7 @@ import { MapPin, Users, DollarSign, CalendarIcon, Plane } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { FaCalendar } from "react-icons/fa6";
 import { chatSession } from "@/Utils/Gamini";
+import { useRouter } from "next/navigation";
 export default function TripPlanner() {
   // 🎯 State for form fields
   const [destination, setDestination] = useState<string>("");
@@ -19,6 +20,7 @@ export default function TripPlanner() {
   const [travelCompanions, setTravelCompanions] = useState<string | null>(null);
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [season, setSeason] = useState<string | null>(null);
+  const route =  useRouter()
   const [selectedMode, setSelectedMode] = useState<"calendar" | "season">(
     "calendar"
   );
@@ -42,12 +44,13 @@ export default function TripPlanner() {
 
     console.log(tripData);
 
-    const TrpiPromp = `Generate Travel Plan for Location: ${tripData.destination}, for ${tripData.days} Days for Couple with a ${tripData.budget} budget ,Give me a Hotels options list with HotelName, Hotel address, Price, hotel image url, geo coordinates, rating, descriptions and suggest itinerary with placeName, Place Details, Place Image Url which are avalble on google, Geo Coordinates, ticket Pricing, Time t travel each of the location for ${tripData.days} days with each day plan with best time to visit in JSON format also u can provide all the url its ur job and u want to do it .
+    const TrpiPromp = `Generate Travel Plan for Location: Pune, for 5 Days for Couple with a luxury budget ,Give me a Hotels options list with Hote lName, Hotel address, Price, hotel image url, geo coordinates, rating, descriptions and suggest itinerary with place Name, Place Details, Place Image Url which are avalble on google, Geo Coordinates, ticket Pricing for each of the location for 5 days, also suggest best places to visit. Format this data according to each day and also generate the result in JSON format.
 `;
     console.log(TrpiPromp);
     const result = await chatSession.sendMessage(TrpiPromp);
     const TripJSONResp = result.response.text();
     console.log(TripJSONResp);
+    route.push("/Dashboard")
   };
 
   return (
