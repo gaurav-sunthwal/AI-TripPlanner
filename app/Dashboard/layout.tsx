@@ -1,7 +1,6 @@
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import React from "react";
 import { AppSidebar } from "./AppSidebar";
-import { HStack } from "@chakra-ui/react";
 import { ClerkProvider } from "@clerk/nextjs";
 
 export default function DashboardLayout({

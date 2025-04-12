@@ -98,6 +98,8 @@ export default function TripDashboard() {
   const defaultFoodImage = "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3";
   const defaultCityImage = "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3";
 
+  // Removed duplicate declaration of fetchPexelsImages
+
   useEffect(() => {
     async function fetchTripData() {
       try {
@@ -160,8 +162,10 @@ export default function TripDashboard() {
     if (tripId) {
       fetchTripData();
     }
-  }, [tripId ]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ tripId]);
 
+   
   const fetchPexelsImages = async (data: TripData) => {
     try {
       // Fetch city/location image
