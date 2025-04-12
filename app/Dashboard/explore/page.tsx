@@ -1,14 +1,11 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
-import { Delete, ExternalLink, Plus } from "lucide-react";
 import Link from "next/link";
-import { useUser } from "@clerk/nextjs";
-import { eq } from "drizzle-orm";
+import { Button } from "@/components/ui/button";
+import { ExternalLink, Search } from "lucide-react";
 import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { db } from "@/Utils/db";
 import { tripDitails } from "@/Utils/schema";
 
@@ -20,24 +17,15 @@ interface Course {
 }
 
 export default function Page() {
-  const { user } = useUser();
   const [courses, setCourses] = useState<Course[]>([]);
   const [filteredCourses, setFilteredCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [searchQuery, setSearchQuery] = useState<string>("");
 
-  const userId = user?.emailAddresses[0]?.emailAddress;
-
   const fetchCourses = useCallback(async () => {
     setLoading(true);
     try {
-      const result = userId
-        ? await db
-            .select()
-            .from(tripDitails)
-            .where(eq(tripDitails.email, userId))
-        : [];
-
+      const result = (await db.select().from(tripDitails)) || [];
       const formattedCourses = result.map(course => ({
         courseId: course.tripId,
         title: course.tripName,
@@ -45,64 +33,44 @@ export default function Page() {
         description: course.tripId,
       }));
       setCourses(formattedCourses);
-      setFilteredCourses(formattedCourses);
+      setFilteredCourses(formattedCourses); // Set initial filtered courses to all courses
     } catch (error) {
       console.error("Error fetching course details:", error);
     } finally {
       setLoading(false);
     }
-  }, [userId]);
+  }, []);
 
   useEffect(() => {
     fetchCourses();
   }, [fetchCourses]);
 
   useEffect(() => {
-    const filtered = courses.filter((course) =>
-      course.title.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-    setFilteredCourses(filtered);
+    // Filter courses based on search query
+    if (searchQuery) {
+      setFilteredCourses(
+        courses.filter((course) =>
+          course.title.toLowerCase().includes(searchQuery.toLowerCase())
+        )
+      );
+    } else {
+      setFilteredCourses(courses);
+    }
   }, [searchQuery, courses]);
 
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(e.target.value);
-  };
-
-  const handleDelete = async (courseId: string) => {
-    if (confirm("Are you sure you want to delete this course?")) {
-      try {
-        await db
-          .delete(tripDitails)
-          .where(eq(tripDitails.tripId, courseId));
-        await db
-          .delete(tripDitails)
-          .where(eq(tripDitails.tripId, courseId));
-        await fetchCourses();
-      } catch (error) {
-        console.error("Error deleting course:", error);
-      }
-    }
-  };
-
   return (
-    <div className="w-full p-4 md:p-8">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
-        <h1 className="text-3xl font-bold mb-4 md:mb-0">
-          Welcome, {user?.fullName}
-        </h1>
-        <div className="w-full md:w-auto flex flex-col md:flex-row items-center gap-4">
-          <Input
-            className="w-full md:w-64"
-            placeholder="Search courses..."
-            value={searchQuery}
-            onChange={handleSearch}
-          />
-          <Link href="/Create_trip">
-            <Button>
-              <Plus className="mr-2 h-4 w-4" /> Add Course
-            </Button>
-          </Link>
-        </div>
+    <div className="p-4">
+      <div className="flex justify-center mb-6 items-center">
+        <input
+          type="text"
+          placeholder="Search for courses..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="border p-2 lg:w-1/2 sm:w-full rounded-lg"
+        />
+        <Button className="h-[40px] ml-3 items-center" variant={"ghost"}>
+          <Search />
+        </Button>
       </div>
       {loading ? (
         <div className="flex justify-center items-center h-64">
@@ -128,14 +96,6 @@ export default function Page() {
                   {course.description || "No description available."}
                 </p>
                 <div className="flex flex-wrap gap-2 mt-3">
-                 
-                  <Button
-                    variant="outline"
-                    className="flex-1"
-                    onClick={() => handleDelete(course.courseId)}
-                  >
-                    <Delete className="mr-2 h-4 w-4" /> Delete
-                  </Button>
                   <Link href={`/Trip/${course.courseId}/`} className="flex-1">
                     <Button variant="outline" className="w-full">
                       <ExternalLink className="mr-2 h-4 w-4" /> View
