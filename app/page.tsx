@@ -31,7 +31,7 @@ export default function Home() {
                   Create a new trip
                 </Button>
               </Link>
-              <Link href="/dashboard">
+              <Link href="/Dashboard">
                 <Button variant="outline" size="lg" className="gap-2">
                   <Calendar className="h-4 w-4" />
                   View dashboard
