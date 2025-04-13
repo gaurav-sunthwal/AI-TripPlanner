@@ -17,18 +17,18 @@ import {  SignOutButton } from "@clerk/nextjs";
 const items = [
   {
     title: "Home",
-    url: "/dashboard",
+    url: "/Dashboard",
     icon: Home,
   },
   {
     title: "Explore",
-    url: "/dashboard/explore",
+    url: "/Dashboard/explore",
     icon: Compass,
   },
 
   {
     title: "Upgrade",
-    url: "/dashboard/upgrade",
+    url: "/Dashboard/upgrade",
     icon: Users,
   },
 ];
